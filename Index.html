@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-title" content="XapNotes" />
+<link rel="manifest" href="/site.webmanifest" />
+</head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Simple Notes</title>
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="main-wrapper">
+        <header class="top-bar">
+            <div class="app-icon">📒</div> <div class="top-actions">
+                <span class="top-action-icon settings-icon" id="settings-icon">⚙️</span> </div>
+        </header>
+
+        <div class="multi-select-bar" id="multi-select-bar">
+            <button class="icon-button" id="exit-multi-select-btn">←</button>
+            <span id="selected-count">0 selected</span>
+            <button class="icon-button" id="delete-selected-btn">🗑️</button>
+        </div>
+
+        <div class="filter-bar" id="filter-bar">
+            <button class="filter-button active" id="filter-all-btn">All</button>
+            <button class="filter-button" id="filter-folder-btn">📁</button> </div>
+
+        <div class="folder-filter-overlay" id="folder-filter-overlay">
+            <div class="folder-filter-modal">
+                <div class="folder-filter-header">
+                    <button class="icon-button" id="close-folder-filter-btn">←</button>
+                    <h2>Select Folder</h2>
+                </div>
+                <div class="add-folder-input">
+                    <input type="text" id="new-folder-name" placeholder="New folder name">
+                    <button id="add-folder-btn" class="add-folder-button">+</button>
+                </div>
+                <ul id="folder-filter-list" class="folder-list">
+                    <li class="folder-item active" data-folder-id="all">All Notes</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="notes-grid-container">
+            <div id="notes-grid"></div>
+        </div>
+
+        <div class="editor-overlay" id="editor-overlay">
+            <div class="editor-modal">
+                <div class="editor-header">
+                    <button class="icon-button" id="close-editor-btn">←</button>
+                    <input type="text" id="note-title" placeholder="Title" required>
+                    <div></div> 
+                </div>
+                <div class="editor-metadata">
+                    <span id="editor-date"></span>
+                    <span id="editor-char-count">0 characters</span>
+                </div>
+                <div class="editor-folder-select">
+                    <span>Folder:</span>
+                    <select id="note-folder-select">
+                        </select>
+                </div>
+                <div id="editor-container"></div>
+                <input type="hidden" id="current-note-id">
+            </div>
+        </div>
+
+        <div class="settings-overlay" id="settings-overlay">
+            <div class="settings-modal">
+                <div class="settings-header">
+                    <button class="icon-button" id="close-settings-btn">←</button>
+                    <h2>Settings</h2>
+                </div>
+                <div class="settings-options">
+                    <div class="setting-group">
+                        <h3>Font Size</h3>
+                        <div class="button-group" id="font-size-options">
+                            <button class="setting-button active" data-font-size="small">Small</button>
+                            <button class="setting-button" data-font-size="medium">Medium</button>
+                            <button class="setting-button" data-font-size="large">Large</button>
+                        </div>
+                    </div>
+                    <div class="setting-group">
+                        <h3>Sort Notes By</h3>
+                        <div class="button-group" id="sort-options">
+                            <button class="setting-button active" data-sort-by="modified">Modification Date</button>
+                            <button class="setting-button" data-sort-by="created">Created Date</button>
+                        </div>
+                    </div>
+                    <div class="setting-group">
+                        <h3>Layout View</h3>
+                        <div class="button-group" id="layout-options">
+                            <button class="setting-button active" data-layout="grid">Grid View</button>
+                            <button class="setting-button" data-layout="list">List View</button>
+                        </div>
+                    </div>
+
+                    <div class="setting-group">
+                        <h3>Manage Folders</h3>
+                        <div class="folder-management-section">
+                            <ul id="settings-folder-list" class="folder-list">
+                                </ul>
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button class="fab" id="add-note-fab">+</button>
+    </div>
+
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

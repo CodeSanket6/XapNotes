@@ -1,0 +1,984 @@
+/* Google Font Import (ensure you have it linked in HTML head) */
+body {
+    font-family: 'Roboto', Arial, sans-serif; /* Use Roboto as primary font */
+    margin: 0;
+    padding: 0;
+    background-color: #f0f2f5; /* Light grey background */
+    color: #333;
+    line-height: 1.5;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    overflow-y: auto; /* Allow scrolling for main content */
+
+    /* Base font size for the entire body - NEW */
+    font-size: 16px; /* Default base font size for medium */
+}
+
+/* Adjust body font size based on settings - NEW */
+body.font-small {
+    font-size: 14px; /* Smaller base for 'small' */
+}
+
+body.font-medium {
+    font-size: 16px; /* Default for 'medium' */
+}
+
+body.font-large {
+    font-size: 18px; /* Larger base for 'large' */
+}
+
+
+/* Main Wrapper for the entire application layout */
+.main-wrapper {
+    width: 100%;
+    max-width: 900px; /* Max width for the entire app */
+    background-color: #ffffff; /* White background for the main app area */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); /* Subtle shadow for depth */
+    border-radius: 16px; /* Slightly more rounded corners for the app container */
+    overflow: hidden; /* Ensure nothing spills out */
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 80px; /* Space for FAB */
+    position: relative; /* For FAB positioning */
+}
+
+/* Top Bar Styling (Header) */
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 25px;
+    background-color: #f7f9fc; /* Light header background */
+    border-bottom: 1px solid #ebeef2;
+    font-size: 1.5em; /* Scales with body font size */
+    font-weight: 500;
+    color: #4a4a4a;
+    transition: transform 0.3s ease, opacity 0.3s ease; /* For hiding/showing */
+}
+
+/* NEW: Multi-Select Bar Styling */
+.multi-select-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 25px;
+    background-color: #007bff; /* Blue background for multi-select */
+    color: white;
+    font-size: 1.5em;
+    font-weight: 500;
+    border-bottom: 1px solid #0056b3;
+
+    /* Initially hidden */
+    transform: translateY(-100%);
+    opacity: 0;
+    position: absolute; /* Position over normal header */
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 2; /* Above top-bar, below modals */
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    box-sizing: border-box; /* Include padding in width */
+}
+
+.multi-select-bar.visible {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.multi-select-bar #selected-count {
+    flex-grow: 1;
+    text-align: center;
+    font-size: 1em; /* Smaller text for count */
+}
+
+/* Icon buttons within multi-select bar */
+.multi-select-bar .icon-button {
+    color: white; /* White icons */
+    font-size: 1.5em; /* Slightly smaller icons */
+}
+
+.multi-select-bar .icon-button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Filter Bar Styling */
+.filter-bar {
+    display: flex;
+    padding: 15px 25px;
+    background-color: #ffffff;
+    border-bottom: 1px solid #ebeef2;
+    gap: 15px;
+    transition: transform 0.3s ease, opacity 0.3s ease; /* For hiding/showing */
+}
+
+/* When multi-select is active, push down top-bar and filter-bar */
+.main-wrapper.multi-select-active .top-bar,
+.main-wrapper.multi-select-active .filter-bar {
+    transform: translateY(100%); /* Push down to make space for multi-select bar */
+    opacity: 0;
+    pointer-events: none; /* Disable interaction when hidden */
+}
+
+/* Adjust main-wrapper content when multi-select bar is visible */
+.main-wrapper.multi-select-active .notes-grid-container {
+    padding-top: 80px; /* Adjust padding to account for multi-select bar */
+}
+
+
+.filter-button {
+    background-color: #e0e6ed; /* Light grey button */
+    color: #555;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 20px; /* Pill shape */
+    font-size: 0.9em; /* Scales with body font size */
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    font-weight: 500;
+}
+
+.filter-button.active {
+    background-color: #007bff; /* Active blue */
+    color: white;
+}
+
+.filter-button:hover:not(.active) {
+    background-color: #d1d9e0;
+}
+
+/* Notes Grid Container */
+.notes-grid-container {
+    padding: 20px;
+    flex-grow: 1; /* Allows it to take available space */
+    transition: padding-top 0.3s ease; /* Smooth transition for padding adjustment */
+}
+
+/* --- LAYOUT VIEWS --- */
+
+/* Default Grid View (applies initially and when grid-view class is active) */
+#notes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Responsive grid columns */
+    gap: 20px; /* Space between cards */
+    padding: 10px; /* Inner padding for the grid */
+}
+
+/* Explicit Grid View for clarity (redundant if #notes-grid is always grid, but good for safety) */
+#notes-grid.grid-view {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 10px;
+    flex-direction: column; /* Reset to column for grid cards */
+}
+
+
+/* List View Overrides */
+#notes-grid.list-view {
+    display: flex; /* Change to flex for list view */
+    flex-direction: column; /* Stack items vertically */
+    gap: 10px; /* Smaller gap for list items */
+    padding: 0; /* Remove inner padding specific to list view */
+}
+
+/* Specific styling for note-card when inside list-view */
+#notes-grid.list-view .note-card {
+    min-height: auto; /* Allow height to adjust */
+    flex-direction: row; /* Horizontal layout for list items */
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04); /* Lighter shadow for list items */
+}
+
+#notes-grid.list-view .note-card h3 {
+    flex-grow: 1; /* Title takes most space */
+    margin-right: 15px; /* Space from content */
+    font-size: 1.15em; /* Scales with body font size */
+}
+
+#notes-grid.list-view .note-card .note-content-preview {
+    display: none; /* Hide preview text in list view */
+}
+
+#notes-grid.list-view .note-card .note-date {
+    white-space: nowrap; /* Keep date on one line */
+    font-size: 0.75em; /* Scales with body font size */
+    margin-left: 10px; /* Space from title/content */
+}
+
+
+/* Individual Note Card Styling (applies to both grid and list view unless overridden) */
+.note-card {
+    background-color: #fdfdfd;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06); /* Soft shadow for grid items */
+    padding: 20px;
+    display: flex;
+    flex-direction: column; /* Default for note-card itself */
+    min-height: 150px; /* Minimum height for grid cards */
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+    border: 1px solid #e5e5e5;
+    position: relative; /* For checkbox positioning */
+}
+
+/* NEW: Checkbox inside note card */
+.note-card .select-checkbox {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 24px; /* Size of checkbox */
+    height: 24px;
+    background-color: #fff;
+    border: 2px solid #ccc;
+    border-radius: 50%; /* Circular checkbox */
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2em; /* For checkmark */
+    color: transparent; /* Hide checkmark by default */
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    z-index: 1; /* Above note content */
+}
+
+.note-card.selected .select-checkbox {
+    background-color: #007bff; /* Blue when selected */
+    border-color: #007bff;
+    color: white; /* Show checkmark */
+}
+
+/* Shift note content when checkbox is visible */
+.note-card.multi-select-mode {
+    padding-left: 45px; /* Make space for checkbox */
+    cursor: default; /* Change cursor in multi-select mode */
+}
+
+.note-card.multi-select-mode h3 {
+    padding-left: 0; /* Adjust title padding if needed */
+}
+
+.note-card.selected {
+    background-color: #e0f0ff; /* Lighter blue for selected card */
+    border-color: #007bff; /* Blue border for selected */
+}
+
+/* Editor Overlay (Modal) */
+.editor-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Bring to front */
+    opacity: 0; /* Initially hidden */
+    visibility: hidden; /* Initially hidden */
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.editor-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.editor-modal {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 700px; /* Max width for the modal */
+    height: 90%; /* Take most of the height */
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    box-sizing: border-box;
+    transform: scale(0.95); /* Start slightly smaller */
+    transition: transform 0.3s ease;
+}
+
+.editor-overlay.visible .editor-modal {
+    transform: scale(1); /* Scale up when visible */
+}
+
+
+.editor-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    padding-right: 15px; /* Added padding for the right side since icons are removed */
+}
+
+.editor-header #note-title {
+    flex-grow: 1; /* Title input takes remaining space */
+    border: none;
+    font-size: 1.8em; /* Scales with body font size */
+    font-weight: 700;
+    color: #333;
+    padding: 0; /* Remove padding */
+    margin: 0 15px; /* Add margin around title */
+    outline: none; /* Remove outline */
+    box-shadow: none; /* Remove box shadow */
+}
+
+.editor-metadata {
+    font-size: 0.9em; /* Scales with body font size */
+    color: #888;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 15px;
+    padding-left: 10px; /* Align with title */
+}
+
+/* Editor Folder Select styles */
+.editor-folder-select {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-left: 10px; /* Align with other metadata */
+    font-size: 0.95em; /* Scales with body font size */
+    color: #555;
+}
+
+.editor-folder-select select {
+    flex-grow: 1;
+    margin-left: 10px;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: #f7f9fc;
+    font-size: 1em; /* Inherit font size from parent */
+    color: #333;
+    -webkit-appearance: none; /* Remove default arrow on WebKit browsers */
+    -moz-appearance: none; /* Remove default arrow on Firefox */
+    appearance: none; /* Remove default arrow */
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23666%22%20d%3D%22M287%2C197.8L159.2%2C68.9c-2.4-2.4-6.2-2.4-8.6%2C0L5.4%2C197.8c-2.4%2C2.4-2.4%2C6.2%2C0%2C8.6l10.7%2C10.7c2.4%2C2.4%2C6.2%2C2.4%2C8.6%2C0l118.5-118.5l118.5%2C118.5c2.4%2C2.4%2C6.2%2C2.4%2C8.6%2C0l10.7-10.7C289.4%2C204%2C289.4%2C200.2%2C287%2C197.8z%22%2F%3E%3C%2Fsvg%3E'); /* Custom arrow */
+    background-repeat: no-repeat;
+    background-position: right 10px top 50%;
+    background-size: 12px auto;
+    cursor: pointer;
+}
+
+#editor-container {
+    height: auto; /* Allow Quill to determine height */
+    flex-grow: 1; /* Editor takes available space */
+    border: none; /* Remove border from editor container */
+    border-radius: 0;
+    background-color: transparent; /* Remove background */
+    margin-bottom: 0; /* No bottom margin */
+    overflow-y: auto; /* Scrollable content inside editor */
+}
+
+/* Quill-specific adjustments within the modal */
+.editor-modal .ql-toolbar.ql-snow {
+    border-radius: 6px; /* Match modal corners */
+    border: none; /* No border for toolbar */
+    background-color: #f7f9fc; /* Light toolbar background */
+    margin-bottom: 10px;
+    padding: 10px;
+}
+
+.editor-modal .ql-container.ql-snow {
+    border: none; /* No border for editor container */
+    background-color: transparent; /* No background */
+    height: 100%; /* Take full height of editor-container */
+    display: flex;
+    flex-direction: column;
+}
+
+.editor-modal .ql-editor {
+    flex-grow: 1; /* Editor content area takes remaining space */
+    padding: 15px 10px;
+    font-size: 1.1em; /* Scales with body font size */
+    line-height: 1.6;
+    color: #444;
+}
+
+/* Icon Buttons for Header/Footer */
+.icon-button {
+    background: none;
+    border: none;
+    font-size: 1.8em; /* Scales with body font size */
+    cursor: pointer;
+    color: #666;
+    padding: 5px;
+    border-radius: 50%; /* Circular buttons */
+    width: 40px; /* Fixed width */
+    height: 40px; /* Fixed height */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.icon-button:hover {
+    background-color: #eee;
+    color: #333;
+}
+
+
+/* Floating Action Button (FAB) */
+.fab {
+    position: fixed; /* Fixed position relative to viewport */
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%; /* Perfect circle */
+    background-color: #007bff; /* Primary blue */
+    color: white;
+    font-size: 2.5em; /* Scales with body font size */
+    border: none;
+    box-shadow: 0 8px 20px rgba(0, 123, 255, 0.3); /* Stronger shadow for pop */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    z-index: 999; /* Ensure it's above other content */
+}
+
+/* Hide FAB in multi-select mode */
+.main-wrapper.multi-select-active .fab {
+    display: none;
+}
+
+
+.fab:hover {
+    background-color: #0056b3;
+    transform: translateY(-3px); /* Lift effect */
+    box-shadow: 0 10px 25px rgba(0, 123, 255, 0.4);
+}
+
+.fab:active {
+    transform: translateY(0);
+    box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+}
+
+/* Message for no notes */
+.no-notes-message {
+    text-align: center;
+    color: #888;
+    font-style: italic;
+    padding: 30px;
+    background-color: #f7f9fc;
+    border-radius: 10px;
+    margin-top: 30px;
+    font-size: 1.1em; /* Scales with body font size */
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); /* Inner shadow */
+}
+
+/* Style for the plus sign in the 'no notes' message */
+.no-notes-message .fab-plus {
+    font-size: 1.2em; /* Scales with parent font size */
+    font-weight: bold;
+    color: #007bff; /* Match FAB color */
+    display: inline-block; /* Allows vertical alignment */
+    vertical-align: middle; /* Align with text baseline */
+    line-height: 1; /* For better text alignment */
+    margin: 0 3px; /* Small spacing */
+}
+
+/* Settings Modal Styles */
+.settings-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1001; /* Higher than editor overlay */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.settings-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.settings-modal {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 500px; /* Smaller max width for settings */
+    height: auto; /* Height adjusts to content */
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    box-sizing: border-box;
+    transform: scale(0.95);
+    transition: transform 0.3s ease;
+}
+
+.settings-overlay.visible .settings-modal {
+    transform: scale(1);
+}
+
+.settings-header {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.settings-header h2 {
+    margin: 0;
+    flex-grow: 1;
+    text-align: center; /* Center "Settings" title */
+    font-size: 1.8em; /* Scales with body font size */
+    color: #333;
+}
+
+/* Specific styling for the back button in settings header to align it */
+.settings-header .icon-button {
+    margin-right: auto; /* Push it to the left */
+    width: 45px;
+    height: 45px;
+    font-size: 1.5em; /* Scales with body font size */
+}
+
+.setting-group {
+    margin-bottom: 25px;
+}
+
+.setting-group h3 {
+    font-size: 1.2em; /* Scales with body font size */
+    color: #4a4a4a;
+    margin-bottom: 15px;
+    text-align: left; /* Align setting group titles left */
+    border-bottom: none; /* No underline for these */
+    padding-bottom: 0;
+    margin-top: 0;
+}
+
+.button-group {
+    display: flex;
+    border: 1px solid #e0e6ed;
+    border-radius: 8px;
+    overflow: hidden; /* Ensures inner buttons respect border-radius */
+}
+
+.setting-button {
+    flex: 1; /* Distribute space equally */
+    background-color: #f7f9fc; /* Light background for inactive */
+    color: #555;
+    border: none;
+    padding: 10px 15px;
+    font-size: 0.95em; /* Scales with body font size */
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    border-right: 1px solid #e0e6ed; /* Separator between buttons */
+}
+
+.button-group .setting-button:last-child {
+    border-right: none; /* Remove border from last button */
+}
+
+.setting-button.active {
+    background-color: #007bff;
+    color: white;
+    box-shadow: inset 0 2px 5px rgba(0, 123, 255, 0.2); /* Inset shadow for active */
+}
+
+.setting-button:hover:not(.active) {
+    background-color: #e6f0f7;
+}
+
+/* Folder Management Section in Settings (now only for rename/delete) */
+.folder-management-section {
+    background-color: #f8faff;
+    border: 1px solid #dcdfe4;
+    border-radius: 10px;
+    padding: 15px;
+}
+
+.folder-list {
+    list-style: none;
+    padding: 0;
+    max-height: 200px; /* Make list scrollable if many folders */
+    overflow-y: auto;
+    margin-bottom: 0; /* Adjusted, no add input here anymore */
+    border: 1px solid #e0e6ed;
+    border-radius: 6px;
+    background-color: #fff;
+}
+
+.folder-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    border-bottom: 1px solid #f0f2f5;
+    font-size: 0.95em;
+    color: #333;
+}
+
+.folder-item:last-child {
+    border-bottom: none;
+}
+
+.folder-item.active {
+    background-color: #e0f0ff; /* Light blue background for active folder */
+    font-weight: 500;
+}
+
+.folder-item .folder-name {
+    flex-grow: 1;
+    cursor: pointer;
+    padding-right: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.folder-item .folder-name.editing {
+    background-color: #fff; /* Ensure white background for editing input */
+    padding: 0;
+    border: none;
+}
+
+.folder-item .folder-name input {
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #007bff;
+    border-radius: 4px;
+    font-size: 1em;
+    box-sizing: border-box;
+}
+
+.folder-item .folder-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.folder-item .folder-actions button {
+    background: none;
+    border: none;
+    font-size: 1.1em;
+    cursor: pointer;
+    color: #6c757d;
+    padding: 5px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    width: 30px; /* Fixed width for icon buttons */
+    height: 30px; /* Fixed height for icon buttons */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.folder-item .folder-actions button:hover {
+    background-color: #e0e6ed;
+    color: #333;
+}
+
+.folder-item .folder-actions .delete-folder-btn {
+    color: #dc3545;
+}
+.folder-item .folder-actions .delete-folder-btn:hover {
+    background-color: #ffe0e3;
+    color: #c82333;
+}
+
+
+/* NEW: Add Folder Input in Folder Filter Modal */
+.folder-filter-modal .add-folder-input {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px; /* Space between input and folder list */
+    padding: 0 5px; /* Slight padding for input alignment */
+}
+
+.folder-filter-modal .add-folder-input #new-folder-name {
+    flex-grow: 1;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1em;
+}
+
+.folder-filter-modal .add-folder-button {
+    background-color: #28a745;
+    color: white;
+    font-size: 1.5em;
+    padding: 5px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    box-shadow: none;
+    margin-right: 0;
+}
+
+.folder-filter-modal .add-folder-button:hover {
+    background-color: #218838;
+    transform: none;
+}
+
+
+/* Folder Filter Overlay Styles */
+.folder-filter-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1002; /* Higher than settings modal */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.folder-filter-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.folder-filter-modal {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 400px; /* Smaller max width for folder filter */
+    height: auto; /* Height adjusts to content */
+    max-height: 80%; /* Max height for scrolling */
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    box-sizing: border-box;
+    transform: scale(0.95);
+    transition: transform 0.3s ease;
+}
+
+.folder-filter-overlay.visible .folder-filter-modal {
+    transform: scale(1);
+}
+
+.folder-filter-header {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.folder-filter-header h2 {
+    margin: 0;
+    flex-grow: 1;
+    text-align: center;
+    font-size: 1.6em;
+    color: #333;
+}
+
+.folder-filter-header .icon-button {
+    margin-right: auto;
+    width: 45px;
+    height: 45px;
+    font-size: 1.5em;
+}
+
+#folder-filter-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-grow: 1;
+    overflow-y: auto; /* Scrollable list of folders */
+}
+
+#folder-filter-list .folder-item {
+    border-bottom: 1px solid #f0f2f5;
+    cursor: pointer;
+}
+
+#folder-filter-list .folder-item:hover {
+    background-color: #e6f0f7;
+}
+
+#folder-filter-list .folder-item.active {
+    background-color: #e0f0ff;
+    font-weight: 500;
+    color: #007bff;
+}
+
+/* Hide action buttons in filter list, as this is for selection */
+#folder-filter-list .folder-item .folder-actions {
+    display: none;
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    body {
+        min-height: 100vh;
+        align-items: stretch;
+    }
+    .main-wrapper {
+        border-radius: 0;
+        box-shadow: none;
+        width: 100%;
+        min-height: 100vh;
+        padding-bottom: 70px;
+    }
+
+    .top-bar {
+        padding: 10px 20px;
+        font-size: 1.3em;
+    }
+
+    .top-actions span {
+        margin-left: 15px;
+        font-size: 0.8em;
+    }
+
+    /* Adjust main-wrapper content when multi-select bar is visible on small screens */
+    .main-wrapper.multi-select-active .notes-grid-container {
+        padding-top: 70px; /* Less padding for multi-select bar on mobile */
+    }
+
+    .filter-bar {
+        padding: 10px 20px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .filter-button {
+        padding: 6px 15px;
+        font-size: 0.85em;
+    }
+
+    .notes-grid-container {
+        padding: 15px;
+    }
+
+    #notes-grid {
+        grid-template-columns: 1fr;
+        padding: 0;
+        gap: 15px;
+    }
+
+    .note-card {
+        padding: 15px;
+        min-height: 120px;
+    }
+
+    /* Multi-select checkbox positioning on small screens */
+    .note-card.multi-select-mode {
+        padding-left: 45px;
+    }
+
+
+    .note-card h3 {
+        font-size: 1.2em;
+    }
+
+    .note-card .note-content-preview {
+        font-size: 0.85em;
+        -webkit-line-clamp: 3;
+    }
+
+    .fab {
+        width: 50px;
+        height: 50px;
+        font-size: 2em;
+        bottom: 20px;
+        right: 20px;
+    }
+
+    .editor-modal {
+        width: 95%;
+        height: 95%;
+        padding: 15px;
+    }
+
+    .editor-header #note-title {
+        font-size: 1.5em;
+        margin: 0 10px;
+    }
+
+    .icon-button {
+        font-size: 1.5em;
+        width: 35px;
+        height: 35px;
+    }
+
+    .editor-modal .ql-toolbar.ql-snow {
+        padding: 8px;
+    }
+
+    .editor-modal .ql-editor {
+        padding: 10px 5px;
+        font-size: 1em;
+    }
+
+    .editor-metadata {
+        font-size: 0.8em;
+        padding-left: 5px;
+    }
+
+    /* Settings modal responsive */
+    .settings-modal {
+        width: 95%;
+        padding: 15px;
+    }
+    .settings-header h2 {
+        font-size: 1.5em;
+    }
+    .settings-header .icon-button {
+        width: 35px;
+        height: 35px;
+        font-size: 1.3em;
+    }
+    .setting-group h3 {
+        font-size: 1.1em;
+    }
+    .setting-button {
+        padding: 8px 10px;
+        font-size: 0.9em;
+    }
+
+    /* Folder Management responsive */
+    .folder-item .folder-actions button {
+        width: 25px;
+        height: 25px;
+        font-size: 1em;
+    }
+    .folder-filter-modal .add-folder-input #new-folder-name {
+        font-size: 0.9em;
+    }
+    .folder-filter-modal .add-folder-button {
+        font-size: 1.3em;
+        padding: 4px 10px;
+    }
+
+    /* Folder Filter modal responsive */
+    .folder-filter-modal {
+        width: 95%;
+        padding: 15px;
+    }
+    .folder-filter-header h2 {
+        font-size: 1.4em;
+    }
+    .folder-filter-header .icon-button {
+        font-size: 1.3em;
+    }
+    .folder-item {
+        font-size: 0.9em;
+    }
+}
