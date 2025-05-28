@@ -60,7 +60,7 @@ Using the XapNotes Notes App is straightforward. It runs directly in your web br
 
 ### Running the Application
 
-1.  **Open `index.html`:** Locate the `index.html` file within the `awesome-note-app` folder. **Double-click this file** to open the application automatically in your default web browser.
+1.  **Open `index.html`:** Locate the `index.html` file within the XapNotes-app` folder. **Double-click this file** to open the application automatically in your default web browser.
 
     * **Alternative (Recommended for development):** If you have a local development server (like VS Code's "Live Server" extension, or a simple Python/Node.js HTTP server), **start your server** from the root of the `awesome-note-app` directory. Then, open your web browser and navigate to the address provided by your server (e.g., `http://localhost:5500` or `http://127.0.0.1:8000`). This method is better for development as it handles pathing correctly.
 
