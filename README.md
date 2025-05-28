@@ -1,3 +1,6 @@
+![XapNotes](images/logo.png)
+
+
 # XapNotes Note App
 
 ---
