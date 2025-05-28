@@ -28,6 +28,12 @@ This note app comes equipped with a set of core functionalities to enhance your 
 
 Follow these simple steps to get the Awesome Note App up and running on your local machine for personal use or development.
 
+
+### Download And Test
+
+If You Want To Try Or Test This App You Can Download It From Our Release 
+
+
 ### Prerequisites
 
 To run this application, all you need is a **modern web browser** (such as Google Chrome, Mozilla Firefox, Microsoft Edge, Apple Safari, etc.). There are no additional software dependencies or installations required, as it's a client-side web application.
