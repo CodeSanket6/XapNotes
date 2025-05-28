@@ -1,10 +1,10 @@
-# Awesome Note App
+# XapNotes Note App
 
 ---
 
 ## Overview
 
-Welcome to the **Awesome Note App**! This is a **simple, intuitive, and efficient note-taking application** designed to help you capture, organize, and manage your thoughts, ideas, and important information with ease. Built with a focus on a **clean user experience**, it allows you to create, view, edit, and delete notes directly in your web browser.
+Welcome to the **XapNotes Note App**! This is a **simple, intuitive, and efficient note-taking application** designed to help you capture, organize, and manage your thoughts, ideas, and important information with ease. Built with a focus on a **clean user experience**, it allows you to create, view, edit, and delete notes directly in your web browser.
 
 ---
 
@@ -47,7 +47,7 @@ To run this application, all you need is a **modern web browser** (such as Googl
 
 ## Usage
 
-Using the Awesome Note App is straightforward. It runs directly in your web browser.
+Using the XapNotes Notes App is straightforward. It runs directly in your web browser.
 
 ### Running the Application
 
